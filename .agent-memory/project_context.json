@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "project_name": "Daňový Poradce Pro",
+    "created_at": "2026-01-15T23:00:00Z",
+    "last_updated": "2026-01-15T23:00:00Z",
+    "version": "0.1.0",
+    "phase": "MVP Development"
+  },
+  "summary": {
+    "one_liner": "AI-powered daňová a účetní platforma pro s.r.o. a FO",
+    "current_focus": "Základní struktura projektu vytvořena",
+    "blockers": [],
+    "next_milestone": "Implementace CRUD operací pro transakce"
+  },
+  "architecture": {
+    "backend": {
+      "framework": "FastAPI",
+      "language": "Python 3.11",
+      "database": "SQLite + SQLCipher",
+      "key_patterns": ["Repository pattern", "Service layer", "Dependency injection"]
+    },
+    "frontend": {
+      "framework": "React 18",
+      "language": "TypeScript",
+      "styling": "Tailwind CSS",
+      "state": "Zustand"
+    },
+    "ai": {
+      "provider": "Anthropic Claude",
+      "model": "claude-sonnet-4-20250514",
+      "patterns": ["Multi-agent", "RAG", "Tool use"]
+    }
+  },
+  "file_structure": {
+    "backend/app/main.py": "FastAPI entry point",
+    "backend/app/config.py": "Application configuration",
+    "backend/app/database.py": "Database connection",
+    "backend/app/models/": "SQLAlchemy models",
+    "backend/app/schemas/": "Pydantic schemas",
+    "backend/app/api/v1/": "API endpoints",
+    "backend/app/services/": "Business logic",
+    "backend/app/memory/": "Memory system",
+    "frontend/src/App.tsx": "React app root",
+    "frontend/src/pages/": "Page components",
+    "frontend/src/components/": "Reusable components"
+  },
+  "conventions": {
+    "naming": {
+      "files": "snake_case for Python, PascalCase for React components",
+      "variables": "snake_case in Python, camelCase in TypeScript",
+      "api_routes": "kebab-case URLs"
+    },
+    "code_style": {
+      "python": "Black formatter, Ruff linter",
+      "typescript": "Prettier, ESLint"
+    },
+    "git": {
+      "branch_pattern": "feature/, bugfix/, hotfix/",
+      "commit_style": "Conventional commits"
+    }
+  },
+  "domain_knowledge": {
+    "tax_rules": {
+      "corporate_tax_2025": 0.21,
+      "dividend_withholding": 0.15,
+      "depreciation_limit": 80000,
+      "personal_tax_base": 0.15,
+      "personal_tax_solidarity": 0.23
+    },
+    "business_context": {
+      "company_type": "s.r.o. - jednatel bez zaměstnanců",
+      "income_sources": ["App Store", "Zaměstnání"],
+      "accounting_type": "Podvojné účetnictví"
+    }
+  },
+  "active_context": {
+    "current_task": null,
+    "open_files": [],
+    "recent_changes": [
+      "Project structure created",
+      "Backend models implemented",
+      "Frontend pages created",
+      "Memory system implemented"
+    ],
+    "pending_questions": []
+  }
+}

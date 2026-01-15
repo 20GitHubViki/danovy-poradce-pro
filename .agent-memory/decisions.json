@@ -1,0 +1,48 @@
+{
+  "decisions": [
+    {
+      "id": "dec_001",
+      "timestamp": "2026-01-15T23:00:00Z",
+      "category": "architecture",
+      "question": "Jakou databázi použít?",
+      "decision": "SQLite s možností SQLCipher pro šifrování",
+      "reasoning": "Lokální běh, zero-config, šifrování citlivých dat, jednoduchost pro MVP",
+      "alternatives_considered": ["PostgreSQL", "MongoDB"],
+      "code_reference": "backend/app/database.py",
+      "user_approved": true
+    },
+    {
+      "id": "dec_002",
+      "timestamp": "2026-01-15T23:05:00Z",
+      "category": "architecture",
+      "question": "Jaký frontend framework?",
+      "decision": "React 18 s TypeScript a Tailwind CSS",
+      "reasoning": "Moderní stack, type-safety, rychlý vývoj UI, velký ekosystém",
+      "alternatives_considered": ["Vue.js", "Svelte"],
+      "code_reference": "frontend/",
+      "user_approved": true
+    },
+    {
+      "id": "dec_003",
+      "timestamp": "2026-01-15T23:10:00Z",
+      "category": "implementation",
+      "question": "Jak strukturovat účetní modely?",
+      "decision": "Oddělené modely pro Transaction, Invoice, Asset s polymorfními vztahy",
+      "reasoning": "Flexibilita, snadné rozšíření, standardní účetní praxe",
+      "alternatives_considered": ["Jeden univerzální model", "NoSQL dokument"],
+      "code_reference": "backend/app/models/",
+      "user_approved": true
+    },
+    {
+      "id": "dec_004",
+      "timestamp": "2026-01-15T23:15:00Z",
+      "category": "technology",
+      "question": "Jak implementovat memory system?",
+      "decision": "File-based JSON storage s JSONL pro historii",
+      "reasoning": "Jednoduchost, čitelnost, snadný export/import, verzovatelnost v git",
+      "alternatives_considered": ["SQLite", "Redis", "Vector DB"],
+      "code_reference": "backend/app/memory/",
+      "user_approved": true
+    }
+  ]
+}

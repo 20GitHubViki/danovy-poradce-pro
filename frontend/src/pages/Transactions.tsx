@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Plus, Search, Filter } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 
@@ -13,11 +13,15 @@ type Transaction = {
   description: string
 }
 
+type TransactionsResponse = {
+  items?: Transaction[]
+}
+
 export default function Transactions() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState<string | null>(null)
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<TransactionsResponse>({
     queryKey: ['transactions', 1],
     queryFn: () => api.get('/transactions?company_id=1'),
   })

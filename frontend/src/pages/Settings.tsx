@@ -1,8 +1,56 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Building2, User, Bot, Database } from 'lucide-react'
+import { useCompanyStore } from '@/stores'
+import type { Company } from '@/types'
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('company')
+  const { currentCompany, createCompany, updateCompany, fetchCompanies, isLoading, error } = useCompanyStore()
+
+  const [companyForm, setCompanyForm] = useState({
+    name: '',
+    ico: '',
+    dic: '',
+    bank_account: '',
+    address: '',
+    is_vat_payer: false,
+    accounting_type: 'danove_evidence' as const,
+  })
+  const [saveMessage, setSaveMessage] = useState('')
+
+  // Load companies and populate form on mount
+  useEffect(() => {
+    fetchCompanies()
+  }, [fetchCompanies])
+
+  // Populate form when currentCompany changes
+  useEffect(() => {
+    if (currentCompany) {
+      setCompanyForm({
+        name: currentCompany.name || '',
+        ico: currentCompany.ico || '',
+        dic: currentCompany.dic || '',
+        bank_account: currentCompany.bank_account || '',
+        address: currentCompany.address || '',
+        is_vat_payer: currentCompany.is_vat_payer || false,
+        accounting_type: currentCompany.accounting_type || 'danove_evidence',
+      })
+    }
+  }, [currentCompany])
+
+  const handleSaveCompany = async () => {
+    setSaveMessage('')
+    try {
+      if (currentCompany?.id) {
+        await updateCompany(currentCompany.id, companyForm)
+      } else {
+        await createCompany(companyForm)
+      }
+      setSaveMessage('Údaje úspěšně uloženy!')
+    } catch (err) {
+      setSaveMessage(`Chyba: ${err instanceof Error ? err.message : 'Nepodařilo se uložit'}`)
+    }
+  }
 
   const tabs = [
     { id: 'company', name: 'Společnost', icon: Building2 },
@@ -49,7 +97,9 @@ export default function Settings() {
                 <input
                   type="text"
                   className="input w-full"
-                  defaultValue="Moje Firma s.r.o."
+                  value={companyForm.name}
+                  onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
+                  placeholder="Moje Firma s.r.o."
                 />
               </div>
               <div>
@@ -57,7 +107,9 @@ export default function Settings() {
                 <input
                   type="text"
                   className="input w-full"
-                  defaultValue="12345678"
+                  value={companyForm.ico}
+                  onChange={(e) => setCompanyForm({ ...companyForm, ico: e.target.value })}
+                  placeholder="12345678"
                 />
               </div>
               <div>
@@ -65,7 +117,9 @@ export default function Settings() {
                 <input
                   type="text"
                   className="input w-full"
-                  defaultValue="CZ12345678"
+                  value={companyForm.dic}
+                  onChange={(e) => setCompanyForm({ ...companyForm, dic: e.target.value })}
+                  placeholder="CZ12345678"
                 />
               </div>
               <div>
@@ -73,6 +127,8 @@ export default function Settings() {
                 <input
                   type="text"
                   className="input w-full"
+                  value={companyForm.bank_account}
+                  onChange={(e) => setCompanyForm({ ...companyForm, bank_account: e.target.value })}
                   placeholder="123456789/0100"
                 />
               </div>
@@ -81,11 +137,51 @@ export default function Settings() {
                 <textarea
                   className="input w-full"
                   rows={2}
-                  defaultValue="Václavské náměstí 1, 110 00 Praha 1"
+                  value={companyForm.address}
+                  onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
+                  placeholder="Václavské náměstí 1, 110 00 Praha 1"
                 />
               </div>
+              <div>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="rounded"
+                    checked={companyForm.is_vat_payer}
+                    onChange={(e) => setCompanyForm({ ...companyForm, is_vat_payer: e.target.checked })}
+                  />
+                  <span className="text-sm text-gray-700">Plátce DPH</span>
+                </label>
+              </div>
+              <div>
+                <label className="label">Typ účetnictví</label>
+                <select
+                  className="input w-full"
+                  value={companyForm.accounting_type}
+                  onChange={(e) => setCompanyForm({ ...companyForm, accounting_type: e.target.value as 'podvojne' | 'danove_evidence' })}
+                >
+                  <option value="danove_evidence">Daňová evidence</option>
+                  <option value="podvojne">Podvojné účetnictví</option>
+                </select>
+              </div>
             </div>
-            <button className="btn-primary">Uložit změny</button>
+            <div className="flex items-center gap-4">
+              <button
+                className="btn-primary"
+                onClick={handleSaveCompany}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Ukládám...' : 'Uložit změny'}
+              </button>
+              {saveMessage && (
+                <span className={`text-sm ${saveMessage.includes('úspěšně') ? 'text-green-600' : 'text-red-600'}`}>
+                  {saveMessage}
+                </span>
+              )}
+              {error && (
+                <span className="text-sm text-red-600">{error}</span>
+              )}
+            </div>
           </div>
         )}
 

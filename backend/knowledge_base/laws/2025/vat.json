@@ -1,0 +1,42 @@
+{
+  "law_id": "235/2004",
+  "name": "Zákon o dani z přidané hodnoty",
+  "valid_from": "2025-01-01",
+  "sections": [
+    {
+      "section": "§6",
+      "title": "Plátce",
+      "content": "Plátcem se stane osoba povinná k dani se sídlem v tuzemsku, jejíž obrat za nejvýše 12 bezprostředně předcházejících po sobě jdoucích kalendářních měsíců přesáhne 2 000 000 Kč, a to od prvního dne druhého měsíce následujícího po měsíci, ve kterém překročila stanovený obrat.",
+      "application": ["registrace", "plátce", "obrat", "limit"],
+      "notes": "Povinná registrace při obratu nad 2M Kč"
+    },
+    {
+      "section": "§47",
+      "title": "Sazby daně",
+      "content": "Základní sazba daně činí 21 %. Snížená sazba daně činí 12 %. Druhá snížená sazba činí 0 % (nulová sazba pro vybrané zboží).",
+      "application": ["sazba", "DPH", "VAT"],
+      "rate": 0.21,
+      "notes": "Základní sazba pro většinu zboží a služeb"
+    },
+    {
+      "section": "§24a",
+      "title": "Místo plnění při poskytnutí služby - App Store",
+      "content": "Místem plnění při poskytnutí služby osobě povinné k dani je místo, kde má tato osoba sídlo. U elektronicky poskytovaných služeb osobám nepovinným k dani je místem plnění místo, kde má příjemce sídlo nebo místo pobytu.",
+      "application": ["služby", "digitální", "app store", "B2B", "B2C"],
+      "notes": "Důležité pro určení, kde se zdaňuje příjem z App Store"
+    },
+    {
+      "section": "§9",
+      "title": "Osoba identifikovaná k dani",
+      "content": "Osobou identifikovanou k dani se stane osoba povinná k dani, která není plátcem, pokud pořizuje zboží z jiného členského státu nebo přijímá služby od osoby z jiného členského státu.",
+      "application": ["identifikovaná osoba", "pořízení", "služby ze zahraničí"],
+      "notes": "Apple fakturuje z Irska - relevantní pro příjem služeb"
+    }
+  ],
+  "rates": {
+    "basic_rate": 0.21,
+    "reduced_rate": 0.12,
+    "zero_rate": 0.0,
+    "registration_threshold": 2000000
+  }
+}

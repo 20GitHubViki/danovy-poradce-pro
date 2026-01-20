@@ -1,57 +1,88 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { Calculator, TrendingUp, AlertCircle } from 'lucide-react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { Calculator, TrendingUp, AlertCircle, Bot, Loader2 } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatCurrency, formatPercent } from '@/utils/formatters'
+import { useSettingsStore } from '@/stores'
+
+interface DividendVsSalaryResult {
+  recommendation: string
+  dividend_net: number
+  salary_net: number
+  savings: number
+  explanation: string
+  legal_references: string[]
+  warnings: string[]
+}
 
 export default function TaxOptimizer() {
   const [profit, setProfit] = useState('')
   const [otherIncome, setOtherIncome] = useState('')
+  const { aiStatus, fetchAIStatus } = useSettingsStore()
 
-  const { mutate: analyze, data: result, isPending } = useMutation({
-    mutationFn: (params: { available_profit: number; other_income: number }) =>
-      api.post('/tax/dividend-vs-salary', params),
+  // Fetch AI status on mount
+  useQuery({
+    queryKey: ['ai-status'],
+    queryFn: async () => {
+      await fetchAIStatus()
+      return true
+    },
   })
 
-  // Mock result for demo
-  const mockResult = {
-    dividend: {
-      net_amount: 263250,
-      total_tax: 86750,
-      effective_rate: 0.2479,
-    },
-    salary: {
-      net_amount: 241500,
-      total_tax: 108500,
-      effective_rate: 0.31,
-      employer_cost: 467200,
-    },
-    recommendation: {
-      better_option: 'dividend',
-      savings: 21750,
-      reasoning:
-        'Při zisku 350 000 Kč je výhodnější dividenda. Úspora: 21 750 Kč.',
-    },
-  }
-
-  const analysisResult = result || (profit ? mockResult : null)
+  const { mutate: analyze, data: result, isPending, error } = useMutation({
+    mutationFn: (params: { available_profit: number; other_income: number }) =>
+      api.post<DividendVsSalaryResult>('/ai/dividend-vs-salary', params),
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    analyze({
-      available_profit: parseFloat(profit) || 0,
-      other_income: parseFloat(otherIncome) || 0,
-    })
+    const profitValue = parseFloat(profit)
+    if (profitValue > 0) {
+      analyze({
+        available_profit: profitValue,
+        other_income: parseFloat(otherIncome) || 0,
+      })
+    }
   }
+
+  // Calculate display values from result
+  const analysisResult = result ? {
+    dividend: {
+      net_amount: Number(result.dividend_net),
+      total_tax: parseFloat(profit) - Number(result.dividend_net),
+      effective_rate: (parseFloat(profit) - Number(result.dividend_net)) / parseFloat(profit),
+    },
+    salary: {
+      net_amount: Number(result.salary_net),
+      total_tax: parseFloat(profit) - Number(result.salary_net),
+      effective_rate: (parseFloat(profit) - Number(result.salary_net)) / parseFloat(profit),
+      employer_cost: parseFloat(profit), // Simplified
+    },
+    recommendation: {
+      better_option: result.recommendation,
+      savings: Number(result.savings),
+      reasoning: result.explanation,
+    },
+    legal_references: result.legal_references,
+    warnings: result.warnings,
+  } : null
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Daňový optimalizátor</h1>
-        <p className="text-gray-500">
-          Porovnání variant výplaty zisku: dividenda vs. mzda
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Daňový optimalizátor</h1>
+          <p className="text-gray-500">
+            Porovnání variant výplaty zisku: dividenda vs. mzda
+          </p>
+        </div>
+        {aiStatus?.configured && (
+          <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+            <Bot className="w-4 h-4" />
+            AI aktivní
+          </div>
+        )}
       </div>
 
       {/* Input Form */}
@@ -69,7 +100,9 @@ export default function TaxOptimizer() {
                   value={profit}
                   onChange={(e) => setProfit(e.target.value)}
                   placeholder="350000"
+                  min="1"
                   className="input w-full pr-12"
+                  required
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                   Kč
@@ -84,6 +117,7 @@ export default function TaxOptimizer() {
                   value={otherIncome}
                   onChange={(e) => setOtherIncome(e.target.value)}
                   placeholder="0"
+                  min="0"
                   className="input w-full pr-12"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -91,15 +125,39 @@ export default function TaxOptimizer() {
                 </span>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                Pro výpočet solidární daně
+                Pro výpočet solidární daně (nad ~2M Kč ročně)
               </p>
             </div>
           </div>
-          <button type="submit" disabled={isPending} className="btn-primary">
-            {isPending ? 'Analyzuji...' : 'Analyzovat'}
+          <button
+            type="submit"
+            disabled={isPending || !profit}
+            className="btn-primary flex items-center gap-2"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Analyzuji...
+              </>
+            ) : (
+              <>
+                <Calculator className="w-4 h-4" />
+                Analyzovat
+              </>
+            )}
           </button>
         </form>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div className="card bg-red-50 border-red-200">
+          <div className="flex items-center gap-2 text-red-700">
+            <AlertCircle className="w-5 h-5" />
+            <p>Chyba při analýze: {error instanceof Error ? error.message : 'Neznámá chyba'}</p>
+          </div>
+        </div>
+      )}
 
       {/* Results */}
       {analysisResult && (
@@ -121,7 +179,7 @@ export default function TaxOptimizer() {
                 </div>
               )}
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                💰 Dividenda
+                Dividenda
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -163,7 +221,7 @@ export default function TaxOptimizer() {
                 </div>
               )}
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                💼 Mzda / DPP
+                Mzda / DPP
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -173,7 +231,7 @@ export default function TaxOptimizer() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Celková daň</span>
+                  <span className="text-gray-500">Celková daň + odvody</span>
                   <span className="text-gray-700">
                     {formatCurrency(analysisResult.salary.total_tax)}
                   </span>
@@ -182,12 +240,6 @@ export default function TaxOptimizer() {
                   <span className="text-gray-500">Efektivní sazba</span>
                   <span className="text-gray-700">
                     {formatPercent(analysisResult.salary.effective_rate * 100)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Náklady zaměstnavatele</span>
-                  <span className="text-gray-700">
-                    {formatCurrency(analysisResult.salary.employer_cost)}
                   </span>
                 </div>
               </div>
@@ -205,7 +257,7 @@ export default function TaxOptimizer() {
                 <h3 className="text-lg font-semibold text-green-800">
                   Doporučení
                 </h3>
-                <p className="text-green-700 mt-1">
+                <p className="text-green-700 mt-1 whitespace-pre-line">
                   {analysisResult.recommendation.reasoning}
                 </p>
                 <p className="text-green-800 font-bold mt-2">
@@ -216,16 +268,58 @@ export default function TaxOptimizer() {
             </div>
           </div>
 
-          {/* Disclaimer */}
-          <div className="flex items-start gap-2 text-sm text-gray-500">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <p>
-              Výpočty jsou orientační a nezohledňují všechny individuální
-              okolnosti. Pro závazné daňové plánování konzultujte s daňovým
-              poradcem.
-            </p>
-          </div>
+          {/* Legal References */}
+          {analysisResult.legal_references && analysisResult.legal_references.length > 0 && (
+            <div className="card">
+              <h3 className="font-semibold text-gray-900 mb-2">Právní reference</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                {analysisResult.legal_references.map((ref, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-gray-400">•</span>
+                    {ref}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Warnings */}
+          {analysisResult.warnings && analysisResult.warnings.length > 0 && (
+            <div className="flex items-start gap-2 text-sm text-gray-500">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <div>
+                {analysisResult.warnings.map((warning, i) => (
+                  <p key={i}>{warning}</p>
+                ))}
+              </div>
+            </div>
+          )}
         </>
+      )}
+
+      {/* Info when no result */}
+      {!result && !isPending && (
+        <div className="card bg-blue-50 border-blue-200">
+          <div className="flex items-start gap-3">
+            <Bot className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-semibold text-blue-800">
+                Jak to funguje?
+              </h3>
+              <ul className="text-blue-700 mt-2 space-y-1 text-sm">
+                <li>1. Zadejte zisk vaší s.r.o. před zdaněním</li>
+                <li>2. Volitelně zadejte ostatní příjmy (ze zaměstnání)</li>
+                <li>3. Systém vypočítá a porovná obě varianty výplaty</li>
+                <li>4. Doporučí optimální strategii s konkrétní úsporou</li>
+              </ul>
+              {aiStatus?.configured && (
+                <p className="text-blue-600 mt-3 text-sm">
+                  S aktivní AI získáte detailní vysvětlení s právními referencemi.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

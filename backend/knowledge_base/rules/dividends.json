@@ -1,0 +1,68 @@
+{
+  "rule_id": "dividend_distribution",
+  "title": "Pravidla pro výplatu dividend",
+  "description": "Postup a podmínky pro výplatu podílu na zisku (dividend) ze s.r.o. společníkovi. Dividenda je zdaněna srážkovou daní 15% a je pro příjemce finálně zdaněna.",
+  "conditions": [
+    {
+      "id": "profit_test",
+      "description": "Lze rozdělit pouze zisk po zdanění snížený o povinný příděl do rezervního fondu (pokud existuje) a neuhrazené ztráty z minulých let",
+      "law_reference": "§34 zákona č. 90/2012 Sb. (ZOK)"
+    },
+    {
+      "id": "insolvency_test",
+      "description": "Společnost nesmí být v úpadku ani se výplatou do úpadku dostat. Jednatel musí provést test likvidity.",
+      "law_reference": "§40 ZOK"
+    },
+    {
+      "id": "approval",
+      "description": "O rozdělení zisku rozhoduje valná hromada (u s.r.o. s jedním společníkem je to rozhodnutí jediného společníka v působnosti valné hromady)",
+      "law_reference": "§190 ZOK"
+    },
+    {
+      "id": "accounting_closure",
+      "description": "Účetní závěrka musí být schválena před rozhodnutím o rozdělení zisku",
+      "law_reference": "§181 ZOK"
+    }
+  ],
+  "process": [
+    "Sestavení řádné účetní závěrky za předchozí rok",
+    "Schválení účetní závěrky valnou hromadou / jediným společníkem",
+    "Rozhodnutí o rozdělení zisku (specifikovat částku a datum splatnosti)",
+    "Provedení testu na rozdělitelný zisk a test likvidity",
+    "Výplata dividendy se sražením 15% srážkové daně",
+    "Odvod sražené daně finančnímu úřadu do konce následujícího měsíce",
+    "Podání vyúčtování daně vybírané srážkou"
+  ],
+  "taxation": {
+    "withholding_rate": 0.15,
+    "payer": "company",
+    "deadline_payment": "do konce měsíce následujícího po měsíci výplaty",
+    "deadline_report": "vyúčtování do 1.4. následujícího roku",
+    "final_taxation": true,
+    "notes": "Srážková daň z dividend je konečná - příjemce dividendu již nezahrnuje do daňového přiznání"
+  },
+  "law_references": [
+    "§36 zákona č. 586/1992 Sb. (srážková daň)",
+    "§38d zákona č. 586/1992 Sb. (odvod srážkové daně)",
+    "§34 zákona č. 90/2012 Sb. (podmínky rozdělení)",
+    "§40 zákona č. 90/2012 Sb. (test insolvence)"
+  ],
+  "examples": [
+    {
+      "title": "Výplata dividendy z čistého zisku",
+      "description": "S.r.o. má zisk po zdanění 500 000 Kč, jediný společník chce vyplatit celý zisk.",
+      "calculation": {
+        "profit_after_tax": 500000,
+        "gross_dividend": 500000,
+        "withholding_tax": 75000,
+        "net_dividend": 425000,
+        "effective_rate": 0.15
+      }
+    }
+  ],
+  "warnings": [
+    "Výplata dividendy bez schválené účetní závěrky je neplatná",
+    "Jednatel odpovídá za provedení testu likvidity",
+    "Dividendu nelze vyplatit na vrub budoucích zisků (záloha na dividendu je omezena)"
+  ]
+}

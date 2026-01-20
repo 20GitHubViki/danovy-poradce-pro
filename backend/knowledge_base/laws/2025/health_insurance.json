@@ -1,0 +1,27 @@
+{
+  "law_id": "592/1992",
+  "name": "Zákon o pojistném na veřejné zdravotní pojištění",
+  "valid_from": "2025-01-01",
+  "sections": [
+    {
+      "section": "§2",
+      "title": "Výše pojistného",
+      "content": "Výše pojistného činí 13,5 % z vyměřovacího základu. Z toho zaměstnanec hradí 4,5 % a zaměstnavatel 9 % z vyměřovacího základu.",
+      "application": ["zdravotní pojištění", "sazba"],
+      "rate": 0.135,
+      "notes": "Celková sazba dělená mezi zaměstnance a zaměstnavatele"
+    },
+    {
+      "section": "§3",
+      "title": "Vyměřovací základ zaměstnance",
+      "content": "Vyměřovacím základem zaměstnance je úhrn příjmů ze závislé činnosti, které jsou předmětem daně z příjmů fyzických osob a nejsou od této daně osvobozeny.",
+      "application": ["základ", "příjmy", "zaměstnanec"],
+      "notes": "Zdravotní pojištění nemá maximální strop"
+    }
+  ],
+  "rates": {
+    "total_rate": 0.135,
+    "employee_rate": 0.045,
+    "employer_rate": 0.09
+  }
+}

@@ -97,7 +97,7 @@ async def update_context(request: UpdateContextRequest):
 
 
 @router.get("/summary")
-async def get_summary(scope: str = Query("project", regex="^(project|session)$")):
+async def get_summary(scope: str = Query("project", pattern="^(project|session)$")):
     """Get summary of project or current session."""
     if scope == "project":
         return {"summary": await memory.generate_project_summary()}

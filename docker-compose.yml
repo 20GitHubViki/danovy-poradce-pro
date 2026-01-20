@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/app.db
+      - DEBUG=false
+      - CORS_ORIGINS=["http://localhost:3000","http://localhost:80"]
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - APPSTORE_KEY_ID=${APPSTORE_KEY_ID:-}
+      - APPSTORE_ISSUER_ID=${APPSTORE_ISSUER_ID:-}
+    volumes:
+      - backend_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/api/v1/system/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  backend_data:

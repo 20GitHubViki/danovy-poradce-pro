@@ -1,0 +1,133 @@
+{
+  "rule_id": "depreciation",
+  "title": "Odpisy dlouhodobého majetku",
+  "description": "Pravidla pro daňové odpisy dlouhodobého hmotného a nehmotného majetku. Odpisy snižují základ daně a rozloží náklad na pořízení majetku do více let.",
+  "conditions": [
+    {
+      "id": "asset_threshold",
+      "description": "Povinně se odpisuje majetek s pořizovací cenou nad 80 000 Kč a dobou použitelnosti delší než 1 rok",
+      "law_reference": "§26 zákona č. 586/1992 Sb."
+    },
+    {
+      "id": "small_asset",
+      "description": "Majetek do 80 000 Kč lze uplatnit jednorázově jako náklad, nebo dobrovolně odpisovat",
+      "law_reference": "§24 odst. 2 písm. v) zákona č. 586/1992 Sb."
+    },
+    {
+      "id": "depreciation_start",
+      "description": "Odpisování se zahajuje po uvedení majetku do stavu způsobilého k užívání",
+      "law_reference": "§26 odst. 5 zákona č. 586/1992 Sb."
+    }
+  ],
+  "depreciation_groups": [
+    {
+      "group": 1,
+      "years": 3,
+      "examples": ["počítače", "kancelářská technika", "mobilní telefony"],
+      "linear_rate_first_year": 20.0,
+      "linear_rate_next_years": 40.0,
+      "accelerated_coef_first_year": 3,
+      "accelerated_coef_next_years": 4
+    },
+    {
+      "group": 2,
+      "years": 5,
+      "examples": ["automobily", "nábytek", "stroje"],
+      "linear_rate_first_year": 11.0,
+      "linear_rate_next_years": 22.25,
+      "accelerated_coef_first_year": 5,
+      "accelerated_coef_next_years": 6
+    },
+    {
+      "group": 3,
+      "years": 10,
+      "examples": ["technologie", "trezory"],
+      "linear_rate_first_year": 5.5,
+      "linear_rate_next_years": 10.5
+    },
+    {
+      "group": 4,
+      "years": 20,
+      "examples": ["budovy výrobní"],
+      "linear_rate_first_year": 2.15,
+      "linear_rate_next_years": 5.15
+    },
+    {
+      "group": 5,
+      "years": 30,
+      "examples": ["budovy administrativní", "obchodní domy"],
+      "linear_rate_first_year": 1.4,
+      "linear_rate_next_years": 3.4
+    },
+    {
+      "group": 6,
+      "years": 50,
+      "examples": ["hotely", "muzea", "knihovny"],
+      "linear_rate_first_year": 1.02,
+      "linear_rate_next_years": 2.02
+    }
+  ],
+  "methods": {
+    "linear": {
+      "description": "Rovnoměrné odpisy - stejná částka každý rok (kromě prvního roku)",
+      "formula": "Odpis = Vstupní cena × Roční sazba / 100"
+    },
+    "accelerated": {
+      "description": "Zrychlené odpisy - vyšší odpisy v prvních letech",
+      "formula_first_year": "Odpis = Vstupní cena / Koeficient",
+      "formula_next_years": "Odpis = 2 × Zůstatková cena / (Koeficient - Počet let odpisování)"
+    }
+  },
+  "process": [
+    "Určit, zda majetek podléhá povinnému odpisování (nad 80 000 Kč)",
+    "Zařadit majetek do správné odpisové skupiny",
+    "Zvolit metodu odpisování (rovnoměrné nebo zrychlené)",
+    "Zahájit odpisování v měsíci uvedení do užívání",
+    "Každý rok spočítat a zaúčtovat daňový odpis",
+    "Vést kartu majetku s evidencí odpisů"
+  ],
+  "taxation": {
+    "tax_deductible": true,
+    "timing": "odpis se uplatní v daňovém přiznání za rok, kdy vznikl nárok",
+    "notes": "Odpisy snižují základ daně a tím i daňovou povinnost"
+  },
+  "law_references": [
+    "§26-33 zákona č. 586/1992 Sb. (odpisy)",
+    "Příloha č. 1 k zákonu č. 586/1992 Sb. (odpisové skupiny)"
+  ],
+  "examples": [
+    {
+      "title": "MacBook Pro za 65 000 Kč",
+      "description": "Pořízení MacBooku pro podnikání",
+      "calculation": {
+        "purchase_price": 65000,
+        "threshold": 80000,
+        "treatment": "jednorázový náklad v roce pořízení",
+        "tax_saving": 13650
+      }
+    },
+    {
+      "title": "MacBook Pro za 95 000 Kč",
+      "description": "Pořízení dražšího MacBooku",
+      "calculation": {
+        "purchase_price": 95000,
+        "depreciation_group": 1,
+        "years": 3,
+        "method": "linear",
+        "year_1": 19000,
+        "year_2": 38000,
+        "year_3": 38000
+      }
+    }
+  ],
+  "warnings": [
+    "Změna metody odpisování není během odpisování možná",
+    "Při vyřazení majetku před úplným odepsáním lze uplatnit pouze poloviční odpis",
+    "Technické zhodnocení nad 80 000 Kč zvyšuje vstupní cenu"
+  ],
+  "tips": [
+    "Pro IT vybavení je výhodné nakupovat do 80 000 Kč - jednorázový náklad",
+    "Zrychlené odpisy jsou výhodné, pokud očekáváte vyšší zisky v prvních letech",
+    "Sledujte limit 80 000 Kč včetně případného příslušenství"
+  ]
+}

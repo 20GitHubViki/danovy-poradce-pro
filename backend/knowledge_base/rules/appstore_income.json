@@ -1,0 +1,76 @@
+{
+  "rule_id": "appstore_income",
+  "title": "Zdanění příjmů z App Store (Apple)",
+  "description": "Pravidla pro zdanění příjmů z prodeje aplikací přes Apple App Store pro českou s.r.o. Příjmy jsou vypláceny v USD z irské entity Apple, je nutné správně přepočítat měnu a zaúčtovat.",
+  "conditions": [
+    {
+      "id": "w8ben_e",
+      "description": "Pro eliminaci US srážkové daně (30%) je nutné mít platný formulář W-8BEN-E registrovaný u Apple",
+      "law_reference": "US-CZ smlouva o zamezení dvojího zdanění"
+    },
+    {
+      "id": "currency_conversion",
+      "description": "Příjmy v USD se přepočítají na CZK kurzem ČNB ke dni přijetí platby",
+      "law_reference": "§38 zákona č. 563/1991 Sb. (zákon o účetnictví)"
+    },
+    {
+      "id": "vat_treatment",
+      "description": "Prodej aplikací koncovým zákazníkům přes App Store - Apple vystupuje jako komisař, pro DPH je to B2B služba od Apple",
+      "law_reference": "§9 zákona č. 235/2004 Sb."
+    }
+  ],
+  "process": [
+    "Zaregistrovat se v App Store Connect jako vývojář",
+    "Vyplnit a odeslat formulář W-8BEN-E pro snížení US srážkové daně na 0%",
+    "Nastavit bankovní účet pro příjem plateb v USD nebo CZK",
+    "Měsíčně stahovat reporty z App Store Connect",
+    "Přepočítat USD na CZK kurzem ČNB k datu přijetí platby",
+    "Zaúčtovat příjem jako tržby za služby (účet 602)",
+    "Evidovat jako příjem pro DPPO"
+  ],
+  "taxation": {
+    "income_type": "příjem z podnikání (prodej SW)",
+    "corporate_tax_rate": 0.21,
+    "us_withholding_with_w8": 0.0,
+    "us_withholding_without_w8": 0.30,
+    "vat_applicable": false,
+    "notes": "S W-8BEN-E není US srážková daň. Příjem se zdaňuje pouze v ČR sazbou 21% DPPO."
+  },
+  "accounting": {
+    "revenue_account": "602 - Tržby z prodeje služeb",
+    "bank_account": "221 - Bankovní účty",
+    "fx_gain_account": "663 - Kurzové zisky",
+    "fx_loss_account": "563 - Kurzové ztráty",
+    "receivable_account": "311 - Pohledávky z obchodních vztahů"
+  },
+  "law_references": [
+    "§21 zákona č. 586/1992 Sb. (sazba DPPO)",
+    "§38 zákona č. 563/1991 Sb. (cizoměnové operace)",
+    "Smlouva mezi ČR a USA o zamezení dvojího zdanění"
+  ],
+  "examples": [
+    {
+      "title": "Měsíční příjem z App Store",
+      "description": "S.r.o. obdrží platbu $1,000 z App Store",
+      "calculation": {
+        "gross_usd": 1000,
+        "us_withholding": 0,
+        "net_usd": 1000,
+        "cnb_rate": 23.50,
+        "amount_czk": 23500,
+        "corporate_tax_21": 4935,
+        "net_profit": 18565
+      }
+    }
+  ],
+  "warnings": [
+    "Bez W-8BEN-E Apple srazí 30% US daň, kterou nelze v ČR uplatnit jako zápočet",
+    "Kurz ČNB se používá ke dni přijetí platby, nikoliv ke dni vystavení reportu",
+    "Apple fakturuje svou provizi (15-30%) - tuto částku už nedostanete, jen se účtuje čistá platba"
+  ],
+  "tips": [
+    "Nastavte si automatický export reportů z App Store Connect",
+    "Veďte evidenci kurzů ČNB pro každou platbu",
+    "W-8BEN-E platí 3 roky, sledujte datum expirace"
+  ]
+}

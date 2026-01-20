@@ -1,0 +1,66 @@
+{
+  "law_id": "586/1992",
+  "name": "Zákon o daních z příjmů",
+  "valid_from": "2025-01-01",
+  "sections": [
+    {
+      "section": "§6",
+      "title": "Příjmy ze závislé činnosti",
+      "content": "Příjmy ze závislé činnosti jsou příjmy ze současného nebo dřívějšího pracovněprávního, služebního nebo členského poměru a obdobného poměru, v nichž poplatník při výkonu práce pro plátce příjmu je povinen dbát příkazů plátce.",
+      "application": ["zaměstnanci", "mzda", "plat", "odměny"],
+      "notes": "Základní ustanovení pro zdanění příjmů ze zaměstnání"
+    },
+    {
+      "section": "§7",
+      "title": "Příjmy ze samostatné činnosti",
+      "content": "Příjmy ze samostatné činnosti jsou příjmy ze zemědělské výroby, lesního a vodního hospodářství, příjmy ze živnostenského podnikání, příjmy z jiného podnikání a příjmy z výkonu nezávislého povolání.",
+      "application": ["OSVČ", "podnikání", "živnost"],
+      "notes": "Pro fyzické osoby podnikající mimo s.r.o."
+    },
+    {
+      "section": "§16",
+      "title": "Sazba daně z příjmů fyzických osob",
+      "content": "Sazba daně činí 15 % ze základu daně sníženého o nezdanitelné části základu daně a o odčitatelné položky od základu daně zaokrouhleného na celé stokoruny dolů. Příjmy přesahující 48násobek průměrné mzdy (solidární zvýšení) se zdaňují sazbou 23 %.",
+      "application": ["DPFO", "fyzické osoby", "sazba"],
+      "rate": 0.15,
+      "notes": "Solidární sazba 23% platí pro příjmy nad cca 1,9M Kč ročně"
+    },
+    {
+      "section": "§21",
+      "title": "Sazba daně z příjmů právnických osob",
+      "content": "Sazba daně činí 21 % ze základu daně sníženého o položky snižující základ daně a o odčitatelné položky od základu daně zaokrouhleného na celé tisíce Kč dolů.",
+      "application": ["DPPO", "právnické osoby", "s.r.o.", "a.s.", "korporátní daň"],
+      "rate": 0.21,
+      "notes": "Platná sazba od 1.1.2024"
+    },
+    {
+      "section": "§35ba",
+      "title": "Slevy na dani pro poplatníky daně z příjmů fyzických osob",
+      "content": "Poplatníkům se daň snižuje o: a) základní slevu na poplatníka ve výši 30 840 Kč ročně, b) slevu na manžela/ku ve výši 24 840 Kč ročně, c) základní slevu na invaliditu ve výši 2 520 Kč ročně.",
+      "application": ["slevy", "daňové zvýhodnění", "poplatník"],
+      "notes": "Sleva na poplatníka je automaticky uplatňována"
+    },
+    {
+      "section": "§36",
+      "title": "Zvláštní sazba daně (srážková daň)",
+      "content": "Zvláštní sazba daně z příjmů plynoucích ze zdrojů na území České republiky činí 15 % pro: a) podíly na zisku (dividendy), b) úroky z vkladů, c) podíly na zisku tichého společníka.",
+      "application": ["dividendy", "podíly na zisku", "srážková daň", "withholding"],
+      "rate": 0.15,
+      "notes": "Srážková daň je konečná - dividendy se již nedaní v přiznání"
+    },
+    {
+      "section": "§38d",
+      "title": "Vybírání daně srážkou",
+      "content": "Plátce daně je povinen srazit daň při výplatě, nejpozději do konce třetího měsíce následujícího po měsíci, v němž bylo rozhodnuto o rozdělení zisku. Sraženou daň odvede plátce správci daně do konce měsíce následujícího po měsíci sražení.",
+      "application": ["srážka daně", "odvod", "termíny"],
+      "notes": "Důležité termíny pro odvod srážkové daně"
+    }
+  ],
+  "rates": {
+    "personal_tax_base": 0.15,
+    "personal_tax_solidarity": 0.23,
+    "corporate_tax": 0.21,
+    "dividend_withholding": 0.15,
+    "solidarity_threshold": 1935552
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "law_id": "589/1992",
+  "name": "Zákon o pojistném na sociální zabezpečení",
+  "valid_from": "2025-01-01",
+  "sections": [
+    {
+      "section": "§7",
+      "title": "Sazby pojistného - zaměstnanec",
+      "content": "Sazba pojistného na důchodové pojištění činí u zaměstnance 6,5 % z vyměřovacího základu. Zaměstnanec neplatí pojistné na nemocenské pojištění ani na státní politiku zaměstnanosti.",
+      "application": ["zaměstnanec", "sociální pojištění", "důchodové"],
+      "rate": 0.065,
+      "notes": "Sráží se ze mzdy zaměstnance"
+    },
+    {
+      "section": "§7",
+      "title": "Sazby pojistného - zaměstnavatel",
+      "content": "Sazba pojistného na sociální zabezpečení činí u zaměstnavatele 24,8 % z vyměřovacího základu, z toho: důchodové pojištění 21,5 %, nemocenské pojištění 2,1 %, státní politika zaměstnanosti 1,2 %.",
+      "application": ["zaměstnavatel", "sociální pojištění", "náklady"],
+      "rate": 0.248,
+      "notes": "Platí zaměstnavatel nad rámec hrubé mzdy"
+    },
+    {
+      "section": "§15",
+      "title": "Maximální vyměřovací základ",
+      "content": "Maximální vyměřovací základ zaměstnance pro placení pojistného je částka ve výši 48násobku průměrné mzdy. Pro rok 2025 činí maximální vyměřovací základ 2 110 416 Kč.",
+      "application": ["strop", "maximum", "vyměřovací základ"],
+      "notes": "Nad tuto částku se již sociální pojištění neplatí"
+    }
+  ],
+  "rates": {
+    "employee_rate": 0.065,
+    "employer_rate": 0.248,
+    "max_base_2025": 2110416
+  }
+}

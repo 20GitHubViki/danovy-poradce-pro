@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   TrendingUp,
@@ -5,6 +6,7 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
+  Building2,
 } from 'lucide-react'
 import {
   AreaChart,
@@ -17,12 +19,40 @@ import {
 } from 'recharts'
 import { api } from '@/services/api'
 import { formatCurrency, formatPercent } from '@/utils/formatters'
+import { useCompanyStore } from '@/stores'
+import type { DashboardData } from '@/types'
 
 export default function Dashboard() {
-  const { data: dashboard, isLoading } = useQuery({
-    queryKey: ['dashboard', 1], // company_id = 1
-    queryFn: () => api.get('/reports/dashboard/1'),
+  const { currentCompany, fetchCompanies } = useCompanyStore()
+
+  // Fetch companies on mount
+  useEffect(() => {
+    fetchCompanies()
+  }, [fetchCompanies])
+
+  const { data: dashboard, isLoading, error } = useQuery<DashboardData>({
+    queryKey: ['dashboard', currentCompany?.id],
+    queryFn: () => api.get(`/reports/dashboard/${currentCompany?.id}`),
+    enabled: !!currentCompany?.id,
   })
+
+  // Show company selector if no company
+  if (!currentCompany) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <Building2 className="w-12 h-12 text-gray-400 mb-4" />
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          Žádná firma není vybrána
+        </h2>
+        <p className="text-gray-500 mb-4">
+          Pro zobrazení dashboardu nejprve vytvořte nebo vyberte firmu.
+        </p>
+        <a href="/settings" className="btn-primary">
+          Přejít do nastavení
+        </a>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -32,48 +62,55 @@ export default function Dashboard() {
     )
   }
 
-  // Mock data for demo
-  const mockData = {
-    income_ytd: 450000,
-    income_growth: 12.5,
-    expenses_ytd: 180000,
-    profit_ytd: 270000,
-    estimated_tax: 56700,
-    cash_flow: [
-      { month: '2026-01', income: 45000, expenses: 15000, balance: 30000 },
-      { month: '2026-02', income: 52000, expenses: 18000, balance: 34000 },
-      { month: '2026-03', income: 48000, expenses: 22000, balance: 26000 },
-      { month: '2026-04', income: 61000, expenses: 16000, balance: 45000 },
-      { month: '2026-05', income: 55000, expenses: 20000, balance: 35000 },
-      { month: '2026-06', income: 58000, expenses: 19000, balance: 39000 },
-    ],
-    pending_invoices_count: 3,
-    pending_invoices_amount: 85000,
-    overdue_invoices_count: 1,
+  // Fallback mock data when API returns error (e.g., no transactions yet)
+  const mockData: DashboardData = {
+    income_ytd: 0,
+    income_growth: 0,
+    expenses_ytd: 0,
+    profit_ytd: 0,
+    estimated_tax: 0,
+    tax_deadline: new Date(new Date().getFullYear() + 1, 3, 1).toISOString(),
+    tax_paid_ytd: 0,
+    cash_flow: [],
+    current_balance: 0,
+    pending_invoices_count: 0,
+    pending_invoices_amount: 0,
+    overdue_invoices_count: 0,
+    overdue_invoices_amount: 0,
     recommendations: [
       {
-        category: 'tax',
-        priority: 'medium',
-        title: 'Daňová optimalizace',
-        message: 'Zvažte výplatu dividend před koncem roku pro optimalizaci daňové zátěže.',
-      },
-      {
-        category: 'accounting',
+        category: 'tip',
         priority: 'low',
-        title: 'Kontrola odpisů',
-        message: 'Zkontrolujte, zda jsou všechny odpisy správně zaúčtovány.',
+        title: 'Začněte zadávat transakce',
+        message: 'Přidejte své první transakce pro zobrazení přehledů a doporučení.',
       },
     ],
   }
 
-  const data = dashboard || mockData
+  const data = error ? mockData : (dashboard || mockData)
+
+  // Generate demo cash flow if empty
+  const cashFlowData = data.cash_flow.length > 0 ? data.cash_flow : [
+    { month: '2026-01', income: 0, expenses: 0, balance: 0 },
+    { month: '2026-02', income: 0, expenses: 0, balance: 0 },
+    { month: '2026-03', income: 0, expenses: 0, balance: 0 },
+  ]
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500">Přehled vaší finanční situace</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500">
+            {currentCompany.name} (IČO: {currentCompany.ico})
+          </p>
+        </div>
+        {currentCompany.is_vat_payer && (
+          <span className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
+            Plátce DPH
+          </span>
+        )}
       </div>
 
       {/* KPI Cards */}
@@ -86,12 +123,18 @@ export default function Dashboard() {
                 {formatCurrency(data.income_ytd)}
               </p>
             </div>
-            <div className="flex items-center text-green-600">
-              <TrendingUp className="w-4 h-4 mr-1" />
-              <span className="text-sm font-medium">
-                {formatPercent(data.income_growth)}
-              </span>
-            </div>
+            {data.income_growth !== 0 && (
+              <div className={`flex items-center ${data.income_growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {data.income_growth >= 0 ? (
+                  <TrendingUp className="w-4 h-4 mr-1" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 mr-1" />
+                )}
+                <span className="text-sm font-medium">
+                  {formatPercent(Math.abs(data.income_growth))}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -110,7 +153,7 @@ export default function Dashboard() {
         <div className="card">
           <div>
             <p className="text-sm text-gray-500">Zisk YTD</p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className={`text-2xl font-bold ${data.profit_ytd >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {formatCurrency(data.profit_ytd)}
             </p>
           </div>
@@ -134,11 +177,14 @@ export default function Dashboard() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Cash Flow</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.cash_flow}>
+              <AreaChart data={cashFlowData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
-                  tickFormatter={(value) => value.split('-')[1]}
+                  tickFormatter={(value) => {
+                    const parts = value.split('-')
+                    return parts.length > 1 ? parts[1] : value
+                  }}
                 />
                 <YAxis tickFormatter={(value) => `${value / 1000}k`} />
                 <Tooltip
@@ -195,9 +241,14 @@ export default function Dashboard() {
                     Po splatnosti
                   </span>
                 </div>
-                <p className="font-bold text-red-800">
-                  {data.overdue_invoices_count}
-                </p>
+                <div className="text-right">
+                  <p className="font-bold text-red-800">
+                    {data.overdue_invoices_count}
+                  </p>
+                  <p className="text-xs text-red-600">
+                    {formatCurrency(data.overdue_invoices_amount)}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -205,10 +256,12 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <span className="text-sm font-medium text-green-800">
-                  Zaplaceno tento měsíc
+                  Aktuální bilance
                 </span>
               </div>
-              <p className="font-bold text-green-800">12</p>
+              <p className="font-bold text-green-800">
+                {formatCurrency(data.current_balance)}
+              </p>
             </div>
           </div>
         </div>
@@ -217,32 +270,48 @@ export default function Dashboard() {
       {/* AI Recommendations */}
       <div className="card">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          🤖 AI Doporučení
+          AI Doporučení
         </h2>
-        <div className="space-y-3">
-          {data.recommendations.map((rec, index) => (
-            <div
-              key={index}
-              className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
-            >
+        {data.recommendations.length > 0 ? (
+          <div className="space-y-3">
+            {data.recommendations.map((rec, index) => (
               <div
-                className={`px-2 py-1 text-xs font-medium rounded ${
-                  rec.priority === 'high'
-                    ? 'bg-red-100 text-red-700'
-                    : rec.priority === 'medium'
-                    ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-gray-100 text-gray-700'
-                }`}
+                key={index}
+                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
               >
-                {rec.category}
+                <div
+                  className={`px-2 py-1 text-xs font-medium rounded ${
+                    rec.priority === 'high'
+                      ? 'bg-red-100 text-red-700'
+                      : rec.priority === 'medium'
+                      ? 'bg-yellow-100 text-yellow-700'
+                      : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {rec.category}
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{rec.title}</p>
+                  <p className="text-sm text-gray-600">{rec.message}</p>
+                  {rec.potential_savings && (
+                    <p className="text-sm text-green-600 mt-1">
+                      Potenciální úspora: {formatCurrency(rec.potential_savings)}
+                    </p>
+                  )}
+                </div>
+                {rec.action_required && (
+                  <span className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded">
+                    Akce nutná
+                  </span>
+                )}
               </div>
-              <div>
-                <p className="font-medium text-gray-900">{rec.title}</p>
-                <p className="text-sm text-gray-600">{rec.message}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center py-4">
+            Žádná doporučení. Přidejte transakce pro personalizované tipy.
+          </p>
+        )}
       </div>
     </div>
   )

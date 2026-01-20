@@ -4,7 +4,7 @@ Main API router aggregating all route modules.
 
 from fastapi import APIRouter
 
-from app.api.v1 import transactions, invoices, companies, reports, tax, ai, memory
+from app.api.v1 import transactions, invoices, companies, reports, tax, ai, memory, appstore, exchange, ocr, assets, system
 
 api_router = APIRouter()
 
@@ -43,4 +43,29 @@ api_router.include_router(
     memory.router,
     prefix="/memory",
     tags=["Memory"],
+)
+api_router.include_router(
+    appstore.router,
+    prefix="/appstore",
+    tags=["App Store"],
+)
+api_router.include_router(
+    exchange.router,
+    prefix="/exchange",
+    tags=["Exchange Rates"],
+)
+api_router.include_router(
+    ocr.router,
+    prefix="/ocr",
+    tags=["OCR"],
+)
+api_router.include_router(
+    assets.router,
+    prefix="/assets",
+    tags=["Assets"],
+)
+api_router.include_router(
+    system.router,
+    prefix="/system",
+    tags=["System"],
 )

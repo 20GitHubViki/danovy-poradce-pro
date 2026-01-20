@@ -15,13 +15,12 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy all files first (needed for pyproject.toml to find README.md)
+COPY . .
+
 # Install Python dependencies
-COPY pyproject.toml ./
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir .
-
-# Copy application code
-COPY . .
 
 # Create data directory
 RUN mkdir -p /app/data

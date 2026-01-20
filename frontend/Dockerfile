@@ -25,14 +25,17 @@ RUN npm run build
 # Stage 2: Production
 FROM nginx:alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Default port (Railway will override via PORT env var)
+ENV PORT=80
+
+# Copy nginx config template
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose port
-EXPOSE 80
+EXPOSE ${PORT}
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx with envsubst to replace PORT in config
+CMD sh -c "envsubst '\$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"

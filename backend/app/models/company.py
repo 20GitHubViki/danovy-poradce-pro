@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from app.models.transaction import Transaction
     from app.models.invoice import Invoice
     from app.models.asset import Asset
+    from app.models.user import UserCompany
 
 
 class Company(Base, TimestampMixin):
@@ -54,6 +55,10 @@ class Company(Base, TimestampMixin):
         cascade="all, delete-orphan",
     )
     assets: Mapped[list["Asset"]] = relationship(
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
+    users: Mapped[list["UserCompany"]] = relationship(
         back_populates="company",
         cascade="all, delete-orphan",
     )

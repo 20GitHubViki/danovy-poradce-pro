@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     claude_model: str = "claude-sonnet-4-20250514"
     claude_max_tokens: int = 4096
 
+    # JWT Authentication
+    jwt_secret: str = "change-this-in-production-use-strong-secret-key"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 30
+    jwt_refresh_expire_days: int = 7
+
     # App Store Connect (optional)
     appstore_key_id: Optional[str] = None
     appstore_issuer_id: Optional[str] = None

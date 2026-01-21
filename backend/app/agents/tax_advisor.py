@@ -99,10 +99,15 @@ OMEZENÍ:
             AgentResponse with tax advice
         """
         context = {}
+        knowledge = None
+
         if company_data:
+            # Extract knowledge_base if present
+            if "knowledge_base" in company_data:
+                knowledge = company_data.pop("knowledge_base")
             context["company_data"] = company_data
 
-        return await self.query(query, context)
+        return await self.query(query, context, knowledge)
 
     async def analyze_dividend_vs_salary(
         self,

@@ -4,9 +4,23 @@ Main API router aggregating all route modules.
 
 from fastapi import APIRouter
 
-from app.api.v1 import transactions, invoices, companies, reports, tax, ai, memory, appstore, exchange, ocr, assets, system
+from app.api.v1 import transactions, invoices, companies, reports, tax, ai, memory, appstore, exchange, ocr, assets, system, auth, knowledge
 
 api_router = APIRouter()
+
+# Auth routes (no prefix for cleaner URLs)
+api_router.include_router(
+    auth.router,
+    prefix="/auth",
+    tags=["Authentication"],
+)
+
+# Knowledge base routes
+api_router.include_router(
+    knowledge.router,
+    prefix="/knowledge",
+    tags=["Knowledge Base"],
+)
 
 # Include all route modules
 api_router.include_router(

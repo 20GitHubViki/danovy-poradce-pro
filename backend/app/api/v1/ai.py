@@ -16,6 +16,8 @@ from app.database import get_db
 from app.config import settings
 from app.models.company import Company
 from app.models.transaction import Transaction
+from app.models.knowledge import KnowledgeCategory
+from app.api.v1.knowledge import get_knowledge_context
 
 router = APIRouter()
 
@@ -147,8 +149,8 @@ async def analyze(
     """
     Perform AI analysis on a query.
 
-    Uses Claude to analyze the query in context of the company's data
-    and Czech tax laws.
+    Uses Claude to analyze the query in context of the company's data,
+    Czech tax laws, and uploaded knowledge documents.
     """
     if not settings.anthropic_api_key:
         raise HTTPException(
@@ -164,6 +166,16 @@ async def analyze(
         if request.company_id:
             company_context = _get_company_context(db, request.company_id)
             context.update(company_context)
+
+        # Add knowledge base context
+        knowledge_context = get_knowledge_context(
+            db=db,
+            query=request.query,
+            year=date.today().year,
+            limit=5,
+        )
+        if knowledge_context:
+            context["knowledge_base"] = knowledge_context
 
         response = await agent.analyze_query(request.query, context)
 

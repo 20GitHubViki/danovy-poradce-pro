@@ -82,17 +82,19 @@ A comprehensive financial management solution that helps Czech entrepreneurs:
 | **OCR Processing** | Document scanning (endpoint only) | Partial |
 | **Memory System** | Persistent AI context storage | Implemented |
 
-### 3.2 Missing Features (Critical)
+### 3.2 Recently Implemented Features
 
-| Feature | Priority | Description |
-|---------|----------|-------------|
-| **User Authentication** | CRITICAL | No login/registration system exists |
-| **Multi-tenancy** | CRITICAL | No user-company relationship model |
-| **Password Management** | CRITICAL | No password hashing/storage |
-| **Session Management** | HIGH | No JWT token implementation |
-| **Role-Based Access** | HIGH | No permission system |
-| **Email Verification** | MEDIUM | No email confirmation flow |
-| **Password Reset** | MEDIUM | No forgot password feature |
+| Feature | Priority | Status |
+|---------|----------|--------|
+| **User Authentication** | CRITICAL | IMPLEMENTED - JWT-based auth with bcrypt |
+| **Multi-tenancy** | CRITICAL | IMPLEMENTED - User-Company relationship |
+| **Password Management** | CRITICAL | IMPLEMENTED - bcrypt hashing |
+| **Session Management** | HIGH | IMPLEMENTED - JWT tokens with refresh |
+| **Role-Based Access** | HIGH | IMPLEMENTED - Admin/User/Viewer roles |
+| **Knowledge Base Upload** | HIGH | IMPLEMENTED - Tax law document management |
+| **AI Knowledge Integration** | HIGH | IMPLEMENTED - AI uses uploaded knowledge |
+| **Email Verification** | MEDIUM | Endpoint ready (needs SMTP config) |
+| **Password Reset** | MEDIUM | Endpoint ready (needs SMTP config) |
 
 ---
 

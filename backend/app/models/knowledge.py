@@ -23,6 +23,8 @@ class KnowledgeCategory(enum.Enum):
     DIVIDENDS = "dividends"  # Dividendy
     DEPRECIATION = "depreciation"  # Odpisy
     APPSTORE = "appstore"  # App Store příjmy
+    OSVC = "osvc"  # OSVČ - self-employed rules
+    PAUSAL = "pausal"  # Paušální výdaje
     GENERAL = "general"  # Obecné
     OTHER = "other"  # Ostatní
 

@@ -8,7 +8,15 @@ from app.models.user import User, UserCompany, UserRole
 from app.models.transaction import Transaction, TransactionType
 from app.models.invoice import Invoice, InvoiceType, InvoiceItem
 from app.models.asset import Asset, AssetCategory, Depreciation
-from app.models.knowledge import KnowledgeDocument
+from app.models.knowledge import KnowledgeDocument, KnowledgeCategory
+from app.models.osvc import (
+    TaxYear,
+    IncomeEntry,
+    TaxRuleset,
+    ComputationResult,
+    ExpenseMode,
+    IncomeSource,
+)
 
 __all__ = [
     "Base",
@@ -25,4 +33,12 @@ __all__ = [
     "AssetCategory",
     "Depreciation",
     "KnowledgeDocument",
+    "KnowledgeCategory",
+    # OSVČ models
+    "TaxYear",
+    "IncomeEntry",
+    "TaxRuleset",
+    "ComputationResult",
+    "ExpenseMode",
+    "IncomeSource",
 ]

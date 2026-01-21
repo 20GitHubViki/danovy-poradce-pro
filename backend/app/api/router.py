@@ -4,7 +4,7 @@ Main API router aggregating all route modules.
 
 from fastapi import APIRouter
 
-from app.api.v1 import transactions, invoices, companies, reports, tax, ai, memory, appstore, exchange, ocr, assets, system, auth, knowledge
+from app.api.v1 import transactions, invoices, companies, reports, tax, ai, memory, appstore, exchange, ocr, assets, system, auth, knowledge, osvc
 
 api_router = APIRouter()
 
@@ -20,6 +20,13 @@ api_router.include_router(
     knowledge.router,
     prefix="/knowledge",
     tags=["Knowledge Base"],
+)
+
+# OSVČ routes
+api_router.include_router(
+    osvc.router,
+    prefix="/osvc",
+    tags=["OSVČ"],
 )
 
 # Include all route modules

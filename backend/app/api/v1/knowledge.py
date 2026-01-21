@@ -318,6 +318,8 @@ def _get_category_label(cat: KnowledgeCategory) -> str:
         KnowledgeCategory.DIVIDENDS: "Dividendy",
         KnowledgeCategory.DEPRECIATION: "Odpisy",
         KnowledgeCategory.APPSTORE: "App Store příjmy",
+        KnowledgeCategory.OSVC: "OSVČ",
+        KnowledgeCategory.PAUSAL: "Paušální výdaje",
         KnowledgeCategory.GENERAL: "Obecné",
         KnowledgeCategory.OTHER: "Ostatní",
     }

@@ -2,7 +2,11 @@
 
 ## Executive Summary
 
-**Daňový Poradce Pro** is an AI-powered tax optimization and accounting platform specifically designed for Czech small businesses (s.r.o. - limited liability companies) and individuals. The platform provides intelligent tax advisory, financial management, and compliance tools powered by Claude AI.
+**Daňový Poradce Pro** is an AI-powered tax optimization and accounting platform designed for:
+1. **Czech s.r.o. (limited liability companies)** - corporate tax optimization
+2. **OSVČ (self-employed individuals)** - personal income tax for freelancers with App Store income
+
+The platform provides intelligent tax advisory, financial management, and compliance tools powered by Claude AI.
 
 ---
 
@@ -10,22 +14,27 @@
 
 ### 1.1 Purpose
 A comprehensive financial management solution that helps Czech entrepreneurs:
-- Optimize tax strategies (dividend vs. salary decisions)
+- **For s.r.o.**: Optimize tax strategies (dividend vs. salary decisions)
+- **For OSVČ**: Track App Store income and compute tax obligations
 - Track income, expenses, and cash flow
 - Manage invoices and assets
 - Get AI-powered tax advice based on Czech tax law
 - Handle multi-currency transactions (with App Store income support)
+- Generate tax filing documents (DPFO, VZP, ČSSZ)
 
 ### 1.2 Target Users
-- Czech s.r.o. (limited liability company) owners
-- Individual entrepreneurs (OSVČ)
-- Small business accountants
-- Freelancers with international income (App Store developers)
+| User Type | Description |
+|-----------|-------------|
+| s.r.o. owners | Limited liability company owners |
+| OSVČ vedlejší | Self-employed with secondary activity (employed + freelance) |
+| OSVČ hlavní | Self-employed as primary activity |
+| App Store developers | iOS/macOS developers receiving Apple payouts |
+| Freelancers | Independent contractors with international income |
 
 ### 1.3 Current Status
-- **Version**: 0.1.0 (Alpha)
-- **Development Stage**: MVP with core features implemented
-- **Deployment**: Configured for Railway deployment
+- **Version**: 0.2.0 (Beta)
+- **Development Stage**: Core features + OSVČ support implemented
+- **Deployment**: Railway (recommended)
 
 ---
 
@@ -40,7 +49,8 @@ A comprehensive financial management solution that helps Czech entrepreneurs:
 | Database | SQLite (dev) / PostgreSQL (prod) | - |
 | AI Engine | Anthropic Claude API | claude-sonnet-4-20250514 |
 | Validation | Pydantic | 2.6.0+ |
-| Auth (JWT) | PyJWT | 2.8.0+ |
+| Auth | JWT + bcrypt | PyJWT 2.8.0+ |
+| Password | passlib[bcrypt] | 1.7.4+ |
 
 ### 2.2 Frontend
 | Component | Technology | Version |
@@ -59,187 +69,263 @@ A comprehensive financial management solution that helps Czech entrepreneurs:
 |-----------|------------|
 | Containerization | Docker + Docker Compose |
 | Web Server | Nginx (frontend), Uvicorn (backend) |
-| CI/CD | Railway auto-deploy |
+| Deployment | Railway (recommended) |
+| Database | PostgreSQL on Railway |
 
 ---
 
 ## 3. Core Features
 
-### 3.1 Implemented Features
+### 3.1 Implemented Features (s.r.o.)
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Dashboard** | Financial overview with income/expense charts | Implemented |
-| **Transactions** | CRUD for income/expenses with categorization | Implemented |
-| **Invoices** | Issue and receive invoices with VAT tracking | Implemented |
-| **Tax Optimizer** | Dividend vs. salary comparison calculator | Implemented |
-| **Reports** | Financial reports and tax estimations | Implemented |
-| **AI Tax Advisor** | Claude-powered tax consultation | Implemented |
-| **Company Settings** | Company profile management | Implemented |
-| **Multi-currency** | CZK conversion with CNB exchange rates | Implemented |
-| **App Store Income** | Special handling for Apple developer income | Implemented |
-| **Asset Management** | Fixed asset tracking with depreciation | Implemented |
-| **OCR Processing** | Document scanning (endpoint only) | Partial |
-| **Memory System** | Persistent AI context storage | Implemented |
+| Dashboard | Financial overview with income/expense charts | Implemented |
+| Transactions | CRUD for income/expenses with categorization | Implemented |
+| Invoices | Issue and receive invoices with VAT tracking | Implemented |
+| Tax Optimizer | Dividend vs. salary comparison calculator | Implemented |
+| Reports | Financial reports and tax estimations | Implemented |
+| AI Tax Advisor | Claude-powered tax consultation | Implemented |
+| Company Settings | Company profile management | Implemented |
+| Multi-currency | CZK conversion with CNB exchange rates | Implemented |
+| App Store Income | Special handling for Apple developer income | Implemented |
+| Asset Management | Fixed asset tracking with depreciation | Implemented |
+| Memory System | Persistent AI context storage | Implemented |
 
-### 3.2 Recently Implemented Features
+### 3.2 Implemented Features (Authentication & Knowledge)
 
-| Feature | Priority | Status |
-|---------|----------|--------|
-| **User Authentication** | CRITICAL | IMPLEMENTED - JWT-based auth with bcrypt |
-| **Multi-tenancy** | CRITICAL | IMPLEMENTED - User-Company relationship |
-| **Password Management** | CRITICAL | IMPLEMENTED - bcrypt hashing |
-| **Session Management** | HIGH | IMPLEMENTED - JWT tokens with refresh |
-| **Role-Based Access** | HIGH | IMPLEMENTED - Admin/User/Viewer roles |
-| **Knowledge Base Upload** | HIGH | IMPLEMENTED - Tax law document management |
-| **AI Knowledge Integration** | HIGH | IMPLEMENTED - AI uses uploaded knowledge |
-| **Email Verification** | MEDIUM | Endpoint ready (needs SMTP config) |
-| **Password Reset** | MEDIUM | Endpoint ready (needs SMTP config) |
+| Feature | Status |
+|---------|--------|
+| User Authentication | Implemented - JWT-based auth with bcrypt |
+| Multi-tenancy | Implemented - User-Company relationship |
+| Role-Based Access | Implemented - Admin/User/Viewer roles |
+| Knowledge Base Upload | Implemented - Tax law document management |
+| AI Knowledge Integration | Implemented - AI uses uploaded knowledge |
 
----
+### 3.3 OSVČ Features (NEW)
 
-## 4. Identified Issues & Proposed Fixes
-
-### 4.1 CRITICAL: No Authentication System
-
-**Current State**:
-- Anyone can access all data
-- No user registration/login
-- No data isolation between users
-- Companies are not linked to user accounts
-
-**Proposed Fix**:
-```
-1. Create User model with:
-   - id, email, password_hash, created_at
-   - is_active, is_verified, role
-
-2. Create UserCompany relationship:
-   - user_id, company_id, role (owner/admin/viewer)
-
-3. Implement endpoints:
-   - POST /auth/register
-   - POST /auth/login
-   - POST /auth/refresh
-   - POST /auth/logout
-   - POST /auth/forgot-password
-   - POST /auth/reset-password
-
-4. Add JWT middleware for protected routes
-
-5. Frontend auth pages:
-   - Login page
-   - Registration page
-   - Password reset flow
-```
-
-**Effort**: 2-3 days of development
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Tax Year Setup | Year-specific settings wizard | Implemented |
+| Income Entry | Track App Store & other income | Implemented |
+| CSV Import | Import App Store payout reports | Implemented |
+| Paušální výdaje | 60% flat-rate expenses calculation | Implemented |
+| DPFO Calculator | Income tax calculation | Implemented |
+| VZP Calculator | Health insurance calculation | Implemented |
+| ČSSZ Calculator | Social security calculation | Implemented |
+| Tax Ruleset | Year-specific tax parameters | Implemented |
+| Export Packs | PDF + CSV exports for filings | Implemented |
+| Due Date Checklist | Filing deadline reminders | Implemented |
 
 ---
 
-### 4.2 HIGH: Database Scalability
+## 4. OSVČ Tax System (Czech Republic)
 
-**Current State**:
-- SQLite used in development
-- PostgreSQL configured for Railway
-- No migrations system
+### 4.1 Supported Modes
+- **OSVČ vedlejší** - Secondary self-employment (user is also employed)
+- **OSVČ hlavní** - Primary self-employment
 
-**Proposed Fix**:
+### 4.2 Expense Modes
+| Mode | Rate | Max Cap (2025) | Description |
+|------|------|----------------|-------------|
+| Paušál 60% | 60% | 2,000,000 CZK | For sales of goods, App Store |
+| Paušál 40% | 40% | 800,000 CZK | For services, consulting |
+| Paušál 30% | 30% | 600,000 CZK | For rentals |
+| Paušál 80% | 80% | 1,600,000 CZK | For agricultural |
+| Skutečné výdaje | - | - | Actual documented expenses |
+
+### 4.3 Tax Calculations
+
+#### Income Tax (DPFO)
 ```
-1. Add Alembic for migrations:
-   pip install alembic
-   alembic init migrations
-
-2. Create initial migration from models
-
-3. Set up migration scripts in CI/CD
+Příjmy (P) = Total income in CZK
+Výdaje (E) = P × expense_rate (or actual)
+Základ daně (Z) = P - E
+Daň = Z × 0.15 (or 0.23 for income above threshold)
 ```
 
-**Effort**: 0.5 day
+#### Health Insurance (VZP)
+```
+Vyměřovací základ = Z × 0.50
+Pojistné = Vyměřovací základ × 0.135
+```
+
+#### Social Security (ČSSZ)
+```
+For OSVČ vedlejší:
+- If Z > rozhodná částka (threshold): pay social insurance
+- Vyměřovací základ = Z × 0.55
+- Pojistné = Vyměřovací základ × 0.292
+```
+
+### 4.4 2025 Tax Parameters (Ruleset)
+| Parameter | Value |
+|-----------|-------|
+| expense_rate_60 | 0.60 |
+| expense_cap_60 | 2,000,000 CZK |
+| health_base_rate | 0.50 |
+| health_contrib_rate | 0.135 |
+| social_base_rate | 0.55 |
+| social_contrib_rate | 0.292 |
+| social_secondary_threshold | 105,520 CZK (2025) |
+| income_tax_rate | 0.15 |
+| income_tax_rate_high | 0.23 |
+| income_tax_threshold | 1,582,812 CZK |
 
 ---
 
-### 4.3 HIGH: API Security
+## 5. Data Model
 
-**Current State**:
-- No rate limiting
-- No API key management
-- CORS is permissive
-- No request validation on some endpoints
+### 5.1 Core Models
 
-**Proposed Fix**:
 ```
-1. Add slowapi for rate limiting
-2. Implement API key system for external access
-3. Tighten CORS in production
-4. Add request size limits
-```
+User
+├── id, email, password_hash
+├── full_name, role (admin/user/viewer)
+├── is_active, is_verified
+└── companies[] (via UserCompany)
 
-**Effort**: 1 day
+Company (for s.r.o.)
+├── id, name, ico, dic
+├── address, bank_account
+├── is_vat_payer, accounting_type
+└── transactions[], invoices[], assets[]
+
+TaxYear (for OSVČ)
+├── id, user_id, year
+├── is_employed, is_osvc_secondary
+├── start_month, expenses_mode
+├── income_entries[], computation_results[]
+└── ruleset_id
+
+IncomeEntry
+├── id, tax_year_id
+├── source (appstore_paid, appstore_sub, affiliate, other)
+├── payout_date, period_start, period_end
+├── currency, amount_gross, amount_net
+├── platform_fees, fx_rate, amount_czk
+├── notes, attachments[]
+└── created_at, updated_at
+
+TaxRuleset
+├── id, year, version
+├── expense_rate, expense_cap
+├── health_base_rate, health_contrib_rate
+├── social_base_rate, social_contrib_rate
+├── social_secondary_threshold
+├── income_tax_rate, income_tax_threshold
+└── effective_from
+
+ComputationResult
+├── id, tax_year_id, ruleset_id
+├── total_income, total_expenses, profit
+├── health_base, health_due
+├── social_threshold_hit, social_base, social_due
+├── income_tax_base, income_tax_due
+└── generated_at
+
+KnowledgeDocument
+├── id, title, category, content
+├── source, year, keywords
+├── is_active, is_verified
+└── uploaded_by_id
+```
 
 ---
 
-### 4.4 MEDIUM: Error Handling
+## 6. API Endpoints
 
-**Current State**:
-- Basic error responses
-- No structured error codes
-- Limited logging
-
-**Proposed Fix**:
+### 6.1 Authentication
 ```
-1. Create standardized error response schema
-2. Add error codes dictionary
-3. Implement structured logging (structlog)
-4. Add Sentry integration for error tracking
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+POST /api/v1/auth/refresh
+POST /api/v1/auth/logout
+GET  /api/v1/auth/me
 ```
 
-**Effort**: 1 day
+### 6.2 Companies (s.r.o.)
+```
+GET/POST   /api/v1/companies
+GET/PUT/DEL /api/v1/companies/{id}
+```
+
+### 6.3 Tax Years (OSVČ)
+```
+GET/POST   /api/v1/tax-years
+GET/PUT/DEL /api/v1/tax-years/{id}
+POST       /api/v1/tax-years/{id}/compute
+GET        /api/v1/tax-years/{id}/summary
+```
+
+### 6.4 Income Entries
+```
+GET/POST   /api/v1/tax-years/{id}/income
+GET/PUT/DEL /api/v1/income/{id}
+POST       /api/v1/tax-years/{id}/income/import-csv
+```
+
+### 6.5 Tax Calculations
+```
+GET  /api/v1/tax/rulesets
+GET  /api/v1/tax/rulesets/{year}
+POST /api/v1/tax/calculate-dpfo
+POST /api/v1/tax/calculate-vzp
+POST /api/v1/tax/calculate-cssz
+```
+
+### 6.6 Exports
+```
+GET /api/v1/tax-years/{id}/export/dpfo
+GET /api/v1/tax-years/{id}/export/vzp
+GET /api/v1/tax-years/{id}/export/cssz
+GET /api/v1/tax-years/{id}/export/all
+```
+
+### 6.7 Knowledge Base
+```
+GET/POST   /api/v1/knowledge
+GET        /api/v1/knowledge/search
+GET/PUT/DEL /api/v1/knowledge/{id}
+```
+
+### 6.8 AI Advisor
+```
+POST /api/v1/ai/analyze
+POST /api/v1/ai/recommend
+```
 
 ---
 
-### 4.5 MEDIUM: Test Coverage
+## 7. Frontend Pages
 
-**Current State**:
-- Only tax_calculator tests exist
-- No API endpoint tests
-- No frontend tests
+### 7.1 Public Pages
+- `/login` - User login
+- `/register` - User registration
 
-**Proposed Fix**:
-```
-1. Add pytest fixtures for database
-2. Write API integration tests
-3. Add Jest for frontend unit tests
-4. Add Playwright for E2E tests
-```
+### 7.2 Protected Pages (Common)
+- `/dashboard` - Main overview
+- `/settings` - User and company settings
 
-**Effort**: 3-5 days
+### 7.3 s.r.o. Pages
+- `/transactions` - Transaction management
+- `/invoices` - Invoice management
+- `/tax-optimizer` - Dividend vs salary optimizer
+- `/reports` - Financial reports
 
----
-
-### 4.6 LOW: Performance Optimization
-
-**Current State**:
-- No caching
-- N+1 queries in some endpoints
-- No pagination on list endpoints
-
-**Proposed Fix**:
-```
-1. Add Redis for caching
-2. Optimize SQLAlchemy queries with joinedload
-3. Implement cursor-based pagination
-```
-
-**Effort**: 2 days
+### 7.4 OSVČ Pages
+- `/tax-years` - Tax year list and setup
+- `/tax-years/{id}` - Year dashboard
+- `/tax-years/{id}/income` - Income entries
+- `/tax-years/{id}/import` - CSV import wizard
+- `/tax-years/{id}/calculations` - Tax calculations
+- `/tax-years/{id}/export` - Export packs
 
 ---
 
-## 5. Deployment Options
+## 8. Deployment (Railway)
 
-### Option A: Railway (Recommended for MVP)
-
-**Architecture**:
+### 8.1 Services
 ```
 ┌─────────────────────────────────────────────────┐
 │                    Railway                       │
@@ -251,370 +337,49 @@ A comprehensive financial management solution that helps Czech entrepreneurs:
 └─────────────────────────────────────────────────┘
 ```
 
-| Pros | Cons |
-|------|------|
-| Already configured | Limited free tier ($5 credit/month) |
-| Auto-deploy from Git | Less control over infrastructure |
-| Managed PostgreSQL | No custom domain on free tier |
-| Easy scaling | EU region only (good for CZ) |
-| SSL included | |
-
-**Estimated Cost**: $5-20/month
-- Frontend: ~$5/mo
-- Backend: ~$5/mo
-- PostgreSQL: ~$5/mo
-- Custom domain: Free (if you have one)
-
-**Setup Time**: 30 minutes
-
----
-
-### Option B: DigitalOcean App Platform
-
-**Architecture**:
-```
-┌─────────────────────────────────────────────────┐
-│              DigitalOcean App Platform          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
-│  │   Static    │  │   Service   │  │ Managed │ │
-│  │    Site     │──│  (Backend)  │──│  Postgres│ │
-│  │   $3/mo     │  │   $5/mo     │  │  $15/mo │ │
-│  └─────────────┘  └─────────────┘  └─────────┘ │
-└─────────────────────────────────────────────────┘
-```
-
-| Pros | Cons |
-|------|------|
-| Reliable infrastructure | More expensive for DB |
-| Good documentation | Manual config needed |
-| Global CDN | No auto-deploy without setup |
-| Managed DB backups | |
-
-**Estimated Cost**: $23-40/month
-
-**Setup Time**: 1-2 hours
-
----
-
-### Option C: Vercel + Render
-
-**Architecture**:
-```
-┌─────────────┐     ┌─────────────────────────────┐
-│   Vercel    │     │          Render             │
-│ ┌─────────┐ │     │ ┌─────────┐   ┌───────────┐│
-│ │Frontend │ │────▶│ │ Backend │───│ PostgreSQL ││
-│ │  Free   │ │     │ │  Free*  │   │   Free*   ││
-│ └─────────┘ │     │ └─────────┘   └───────────┘│
-└─────────────┘     └─────────────────────────────┘
-                    *Sleeps after 15min inactivity
-```
-
-| Pros | Cons |
-|------|------|
-| Free tier available | Cold starts on Render free tier |
-| Excellent frontend DX | DB sleeps on free tier |
-| Automatic HTTPS | Split infrastructure |
-| Edge functions | Complex CORS setup |
-
-**Estimated Cost**: $0-14/month
-- Free tier: $0 (with limitations)
-- Paid: ~$7/mo (Render) + $0 (Vercel)
-
-**Setup Time**: 1-2 hours
-
----
-
-### Option D: VPS (Hetzner/Contabo)
-
-**Architecture**:
-```
-┌─────────────────────────────────────────────────┐
-│              VPS (4GB RAM, 2 vCPU)              │
-│  ┌──────────────────────────────────────────┐  │
-│  │              Docker Compose               │  │
-│  │  ┌─────────┐ ┌─────────┐ ┌───────────┐  │  │
-│  │  │ Nginx   │ │ FastAPI │ │ PostgreSQL│  │  │
-│  │  │ +React  │─│ Backend │─│    DB     │  │  │
-│  │  └─────────┘ └─────────┘ └───────────┘  │  │
-│  └──────────────────────────────────────────┘  │
-│                    Traefik                      │
-│                 (SSL/Proxy)                     │
-└─────────────────────────────────────────────────┘
-```
-
-| Pros | Cons |
-|------|------|
-| Cheapest long-term | Self-managed |
-| Full control | Security responsibility |
-| EU servers (GDPR) | Manual backups |
-| No vendor lock-in | Requires DevOps knowledge |
-
-**Estimated Cost**: €4-8/month
-- Hetzner CX22: €4.51/mo (2 vCPU, 4GB RAM, 40GB SSD)
-- Contabo VPS S: €5.99/mo (4 vCPU, 8GB RAM, 200GB SSD)
-
-**Setup Time**: 4-8 hours (including SSL, backups)
-
----
-
-### Option E: Fly.io
-
-**Architecture**:
-```
-┌─────────────────────────────────────────────────┐
-│                    Fly.io                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
-│  │  Frontend   │  │   Backend   │  │ Postgres│ │
-│  │  (static)   │──│  (machine)  │──│  (Fly)  │ │
-│  │    Free     │  │   $5/mo     │  │  Free*  │ │
-│  └─────────────┘  └─────────────┘  └─────────┘ │
-└─────────────────────────────────────────────────┘
-                    * 3GB storage free
-```
-
-| Pros | Cons |
-|------|------|
-| Free tier generous | Learning curve |
-| Global edge network | CLI-based deployment |
-| Auto-scaling | Pricing can be unpredictable |
-| Great for APIs | |
-
-**Estimated Cost**: $0-10/month
-
-**Setup Time**: 2-3 hours
-
----
-
-## 6. Recommended Solution
-
-### For Your Requirements:
-- Online access
-- User registration (multiple accounts)
-- Cost-effective
-
-### Recommendation: **Railway (Option A)** + Authentication Implementation
-
-**Why Railway?**
-1. Already configured in the codebase
-2. Quick deployment (30 min)
-3. Managed PostgreSQL included
-4. Auto-deploy on git push
-5. SSL/HTTPS automatic
-6. Reasonable cost (~$15/mo)
-7. EU region available (GDPR compliance)
-
-**Implementation Roadmap**:
-
-```
-Phase 1: Authentication (Priority)
-├── Add User model
-├── Implement auth endpoints
-├── Add JWT middleware
-├── Create login/register pages
-└── Test multi-user isolation
-
-Phase 2: Deploy to Railway
-├── Set up PostgreSQL
-├── Configure environment variables
-├── Deploy backend + frontend
-├── Set up custom domain
-└── Enable auto-deploy
-
-Phase 3: Polish
-├── Add email verification
-├── Implement password reset
-├── Add rate limiting
-├── Set up monitoring
-└── Create user onboarding
-```
-
----
-
-## 7. Database Schema (Proposed with Auth)
-
-```
-┌─────────────────┐     ┌─────────────────┐
-│      User       │     │   UserCompany   │
-├─────────────────┤     ├─────────────────┤
-│ id              │────▶│ user_id         │
-│ email           │     │ company_id      │◀────┐
-│ password_hash   │     │ role            │     │
-│ is_active       │     │ created_at      │     │
-│ is_verified     │     └─────────────────┘     │
-│ created_at      │                              │
-└─────────────────┘                              │
-                                                 │
-┌─────────────────┐                              │
-│    Company      │──────────────────────────────┘
-├─────────────────┤
-│ id              │
-│ name            │────▶ Transactions
-│ ico             │────▶ Invoices
-│ dic             │────▶ Assets
-│ ...             │────▶ Documents
-└─────────────────┘
-```
-
----
-
-## 8. API Endpoints (Current + Proposed)
-
-### Current Endpoints
-```
-GET/POST   /api/v1/companies
-GET/PUT/DEL /api/v1/companies/{id}
-GET/POST   /api/v1/transactions
-GET/POST   /api/v1/invoices
-POST       /api/v1/tax/calculate
-POST       /api/v1/ai/query
-GET        /api/v1/reports/dashboard
-GET        /api/v1/exchange/rates
-GET        /api/v1/system/health
-```
-
-### Proposed Auth Endpoints
-```
-POST /api/v1/auth/register     - Create new account
-POST /api/v1/auth/login        - Get access token
-POST /api/v1/auth/refresh      - Refresh token
-POST /api/v1/auth/logout       - Invalidate token
-POST /api/v1/auth/forgot       - Request password reset
-POST /api/v1/auth/reset        - Reset password
-GET  /api/v1/auth/me           - Get current user
-PUT  /api/v1/auth/me           - Update profile
-```
-
----
-
-## 9. Environment Variables
-
-### Backend (.env)
+### 8.2 Environment Variables
 ```env
-# Application
-DEBUG=false
-SECRET_KEY=your-secret-key-here
-
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
-
-# AI
+# Backend
+DATABASE_URL=postgresql://...
 ANTHROPIC_API_KEY=sk-ant-...
+JWT_SECRET=your-secure-secret
+CORS_ORIGINS=["https://your-app.up.railway.app"]
 
-# CORS
-CORS_ORIGINS=["https://your-domain.com"]
-
-# JWT
-JWT_SECRET=your-jwt-secret
-JWT_ALGORITHM=HS256
-JWT_EXPIRE_MINUTES=30
-
-# Email (optional)
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=user
-SMTP_PASSWORD=pass
+# Frontend
+VITE_API_URL=https://your-api.up.railway.app
 ```
 
-### Frontend (.env)
-```env
-VITE_API_URL=https://api.your-domain.com
-```
+### 8.3 Estimated Cost: ~$15-20/month
 
 ---
 
-## 10. Security Considerations
+## 9. Filing Checklist (Czech Republic)
 
-### Must Have
-- [ ] Password hashing (bcrypt/argon2)
-- [ ] JWT with short expiration
-- [ ] HTTPS enforced
-- [ ] SQL injection prevention (SQLAlchemy handles this)
-- [ ] XSS prevention (React handles this)
-- [ ] CSRF tokens for forms
-- [ ] Rate limiting on auth endpoints
-- [ ] Input validation (Pydantic handles this)
-
-### Should Have
-- [ ] Two-factor authentication
-- [ ] Audit logging
-- [ ] IP-based rate limiting
-- [ ] Security headers (already in nginx.conf)
-- [ ] Regular dependency updates
-
-### GDPR Compliance (Czech/EU)
-- [ ] Cookie consent banner
-- [ ] Privacy policy page
-- [ ] Data export feature
-- [ ] Account deletion feature
-- [ ] Data processing agreement
+### 9.1 Annual Deadlines
+| Filing | Deadline | Form |
+|--------|----------|------|
+| DPFO (online) | April 2 | DAP DPFO |
+| DPFO (paper) | March 31 | DAP DPFO |
+| Přehled VZP | May 2 | Přehled OSVČ |
+| Přehled ČSSZ | May 2 | Přehled OSVČ |
 
 ---
 
-## 11. Cost Summary
+## 10. Knowledge Base Categories
 
-| Platform | Monthly Cost | Setup Time | Maintenance |
-|----------|-------------|------------|-------------|
-| Railway | $15-20 | 30 min | Low |
-| DigitalOcean | $23-40 | 1-2 hours | Low |
-| Vercel+Render | $0-14 | 1-2 hours | Medium |
-| VPS (Hetzner) | €4-8 | 4-8 hours | High |
-| Fly.io | $0-10 | 2-3 hours | Medium |
-
----
-
-## 12. Next Steps
-
-1. **Immediate**: Implement authentication system
-2. **Short-term**: Deploy to Railway with PostgreSQL
-3. **Medium-term**: Add monitoring, backups, email
-4. **Long-term**: Scale based on user growth
+| Category | Czech Name | Description |
+|----------|------------|-------------|
+| income_tax | Daň z příjmu | DPFO rules |
+| vat | DPH | VAT regulations |
+| social_insurance | Sociální pojištění | ČSSZ rules |
+| health_insurance | Zdravotní pojištění | VZP rules |
+| accounting | Účetnictví | Accounting standards |
+| dividends | Dividendy | Dividend taxation |
+| depreciation | Odpisy | Asset depreciation |
+| appstore | App Store | Apple income specifics |
+| osvc | OSVČ | Self-employment rules |
 
 ---
 
-## Appendix A: File Structure
-
-```
-danovy-poradce-pro/
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/           # API endpoints
-│   │   ├── models/           # SQLAlchemy models
-│   │   ├── schemas/          # Pydantic schemas
-│   │   ├── services/         # Business logic
-│   │   ├── agents/           # AI agents
-│   │   └── memory/           # AI memory system
-│   ├── knowledge_base/       # Tax rules & laws
-│   └── tests/
-├── frontend/
-│   ├── src/
-│   │   ├── pages/            # React pages
-│   │   ├── components/       # UI components
-│   │   ├── stores/           # Zustand stores
-│   │   └── services/         # API calls
-│   └── nginx.conf
-├── docker-compose.yml
-└── Makefile
-```
-
----
-
-## Appendix B: Knowledge Base Structure
-
-```
-knowledge_base/
-├── laws/2025/
-│   ├── income_tax.json       # DPPO/DPFO rates
-│   ├── vat.json              # DPH rules
-│   ├── social_insurance.json # Social contributions
-│   └── health_insurance.json # Health contributions
-└── rules/
-    ├── dividends.json        # Dividend taxation
-    ├── depreciation.json     # Asset depreciation
-    └── appstore_income.json  # App Store specifics
-```
-
----
-
-*Document generated: 2026-01-21*
-*Version: 1.0*
+*Document Version: 2.0*
+*Last Updated: 2026-01-21*

@@ -140,7 +140,7 @@ def init_db() -> None:
     from app.models.base import Base
 
     # Import all models to register them
-    from app.models import company, transaction, invoice, asset, user, knowledge
+    from app.models import company, transaction, invoice, asset, user, knowledge, osvc
 
     # Create tables
     Base.metadata.create_all(bind=engine)
